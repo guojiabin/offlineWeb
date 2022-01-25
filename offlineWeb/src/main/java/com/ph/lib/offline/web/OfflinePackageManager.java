@@ -44,14 +44,14 @@ import java.util.concurrent.locks.ReentrantLock;
  * created by guojiabin on 2022/1/24
  * 离线包管理器
  */
-public class PackageManager {
+public class OfflinePackageManager {
     private static final int WHAT_DOWNLOAD_SUCCESS = 1;
     private static final int WHAT_DOWNLOAD_FAILURE = 2;
     private static final int WHAT_START_UPDATE = 3;
     private static final int WHAT_INIT_ASSETS = 4;
 
     private static final int STATUS_PACKAGE_CANUSE = 1;
-    private volatile static PackageManager instance;
+    private volatile static OfflinePackageManager instance;
 
     private Context context;
     private ResourceManager resourceManager;
@@ -75,11 +75,11 @@ public class PackageManager {
     private Map<String, Integer> packageStatusMap = new HashMap<>();
     private PackageConfig config = new PackageConfig();
 
-    public static PackageManager getInstance() {
+    public static OfflinePackageManager getInstance() {
         if (instance == null) {
-            synchronized (PackageManager.class) {
+            synchronized (OfflinePackageManager.class) {
                 if (instance == null) {
-                    instance = new PackageManager();
+                    instance = new OfflinePackageManager();
                 }
             }
         }
@@ -108,7 +108,7 @@ public class PackageManager {
         this.validator = validator;
     }
 
-    private PackageManager() {
+    private OfflinePackageManager() {
         resourceLock = new ReentrantLock();
     }
 
@@ -447,9 +447,9 @@ public class PackageManager {
     }
 
     static class DownloadCallback implements Downloader.DownloadCallback {
-        private PackageManager packageManager;
+        private OfflinePackageManager packageManager;
 
-        public DownloadCallback(PackageManager packageManager) {
+        public DownloadCallback(OfflinePackageManager packageManager) {
             this.packageManager = packageManager;
         }
 

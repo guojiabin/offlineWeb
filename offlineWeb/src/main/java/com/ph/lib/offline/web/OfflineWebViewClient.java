@@ -72,7 +72,7 @@ public class OfflineWebViewClient extends WebViewClient {
      * @param url 资源地址
      */
     private WebResourceResponse getWebResourceResponse(String url) {
-        WebResourceResponse resourceResponse = PackageManager.getInstance().getResource(url);
+        WebResourceResponse resourceResponse = OfflinePackageManager.getInstance().getResource(url);
         return resourceResponse;
     }
 

@@ -2,7 +2,7 @@ package com.yjj.demo;
 
 import android.app.Application;
 
-import com.ph.lib.offline.web.PackageManager;
+import com.ph.lib.offline.web.OfflinePackageManager;
 
 
 /**
@@ -12,8 +12,8 @@ public class DemoApplication extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
-        PackageManager.getInstance().init(this);
-        PackageManager.getInstance().update(getPackageInfo());
+        OfflinePackageManager.getInstance().init(this);
+        OfflinePackageManager.getInstance().update(getPackageInfo());
     }
 
     private String getPackageInfo() {
