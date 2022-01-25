@@ -1,0 +1,63 @@
+com/yjj/webpackagekit/core/util/VersionUtils.java
+ com.yjj.webpackagekit.core.util.VersionUtils
+com/yjj/webpackagekit/core/util/GsonUtils.java
+ com.yjj.webpackagekit.core.util.GsonUtils
+com/yjj/webpackagekit/core/ResourceKey.java
+ com.yjj.webpackagekit.core.ResourceKey
+com/yjj/webpackagekit/core/ResoureceValidator.java
+ com.yjj.webpackagekit.core.ResoureceValidator
+com/yjj/webpackagekit/core/PackageStatus.java
+ com.yjj.webpackagekit.core.PackageStatus
+com/yjj/webpackagekit/PackageConfig.java
+ com.yjj.webpackagekit.PackageConfig
+com/yjj/webpackagekit/core/util/MD5Utils.java
+ com.yjj.webpackagekit.core.util.MD5Utils
+com/yjj/webpackagekit/PackageValidator.java
+ com.yjj.webpackagekit.PackageValidator
+com/yjj/webpackagekit/core/Downloader.java
+ com.yjj.webpackagekit.core.Downloader
+ com.yjj.webpackagekit.core.Downloader$DownloadCallback
+com/yjj/webpackagekit/core/ResourceInfoEntity.java
+ com.yjj.webpackagekit.core.ResourceInfoEntity
+com/yjj/webpackagekit/core/PackageEntity.java
+ com.yjj.webpackagekit.core.PackageEntity
+com/yjj/webpackagekit/core/util/MimeTypeUtils.java
+ com.yjj.webpackagekit.core.util.MimeTypeUtils
+com/yjj/webpackagekit/inner/DownloaderImpl.java
+ com.yjj.webpackagekit.inner.DownloaderImpl
+ com.yjj.webpackagekit.inner.DownloaderImpl$1
+com/yjj/webpackagekit/inner/PackageInstallerImpl.java
+ com.yjj.webpackagekit.inner.PackageInstallerImpl
+com/yjj/webpackagekit/core/ResourceInfo.java
+ com.yjj.webpackagekit.core.ResourceInfo
+com/yjj/webpackagekit/inner/AssetResourceLoaderImpl.java
+ com.yjj.webpackagekit.inner.AssetResourceLoaderImpl
+com/yjj/webpackagekit/core/AssetResourceLoader.java
+ com.yjj.webpackagekit.core.AssetResourceLoader
+com/yjj/webpackagekit/core/Contants.java
+ com.yjj.webpackagekit.core.Contants
+com/yjj/webpackagekit/inner/ResourceManagerImpl.java
+ com.yjj.webpackagekit.inner.ResourceManagerImpl
+ com.yjj.webpackagekit.inner.ResourceManagerImpl$DefaultResourceValidator
+com/yjj/webpackagekit/core/PackageInstaller.java
+ com.yjj.webpackagekit.core.PackageInstaller
+com/yjj/webpackagekit/core/util/Logger.java
+ com.yjj.webpackagekit.core.util.Logger
+com/yjj/webpackagekit/core/PackageInfo.java
+ com.yjj.webpackagekit.core.PackageInfo
+com/yjj/webpackagekit/PackageManager.java
+ com.yjj.webpackagekit.PackageManager
+ com.yjj.webpackagekit.PackageManager$DefaultAssetPackageValidator
+ com.yjj.webpackagekit.PackageManager$DefaultPackageValidator
+ com.yjj.webpackagekit.PackageManager$DownloadCallback
+ com.yjj.webpackagekit.PackageManager$DownloadHandler
+com/yjj/webpackagekit/BuildConfig.java
+ com.yjj.webpackagekit.BuildConfig
+com/yjj/webpackagekit/core/util/FileUtils.java
+ com.yjj.webpackagekit.core.util.FileUtils
+com/yjj/utils/DiffUtils.java
+ com.yjj.utils.DiffUtils
+com/yjj/webpackagekit/OfflineWebViewClient.java
+ com.yjj.webpackagekit.OfflineWebViewClient
+com/yjj/webpackagekit/core/ResourceManager.java
+ com.yjj.webpackagekit.core.ResourceManager
