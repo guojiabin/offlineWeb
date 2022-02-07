@@ -7,13 +7,13 @@ import java.util.List;
  * 离线包Index信息
  */
 public class PackageEntity {
-    private List<PackageInfo> items;
+    private List<PackageInfo> list;
 
-    public void setItems(List<PackageInfo> items) {
-        this.items = items;
+    public void setList(List<PackageInfo> items) {
+        this.list = items;
     }
 
-    public List<PackageInfo> getItems() {
-        return items;
+    public List<PackageInfo> getList() {
+        return list;
     }
 }

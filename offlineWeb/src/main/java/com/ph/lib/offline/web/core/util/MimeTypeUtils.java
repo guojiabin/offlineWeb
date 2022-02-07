@@ -17,6 +17,9 @@ public class MimeTypeUtils {
         supportMineTypeList.add("text/css");
         supportMineTypeList.add("image/gif");
         supportMineTypeList.add("image/png");
+        supportMineTypeList.add("application/javascript");
+        supportMineTypeList.add("image/ico");
+        supportMineTypeList.add("text/html");
     }
 
     public static boolean checkIsSupportMimeType(String mimeType) {

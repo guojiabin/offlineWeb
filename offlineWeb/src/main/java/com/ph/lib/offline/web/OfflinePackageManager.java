@@ -9,6 +9,8 @@ import android.text.TextUtils;
 
 import com.google.gson.Gson;
 import com.liulishuo.filedownloader.FileDownloader;
+import com.ph.lib.offline.web.cache.CacheManage;
+import com.ph.lib.offline.web.cache.DiskLruCacheImpl;
 import com.ph.lib.offline.web.core.AssetResourceLoader;
 import com.ph.lib.offline.web.core.Downloader;
 import com.ph.lib.offline.web.core.PackageEntity;
@@ -53,6 +55,8 @@ public class OfflinePackageManager {
     private static final int STATUS_PACKAGE_CANUSE = 1;
     private volatile static OfflinePackageManager instance;
 
+    public String baseUrl = "https://www.yunoa.com";
+
     private Context context;
     private ResourceManager resourceManager;
     private PackageInstaller packageInstaller;
@@ -74,6 +78,8 @@ public class OfflinePackageManager {
     private PackageValidator assetValidator;
     private Map<String, Integer> packageStatusMap = new HashMap<>();
     private PackageConfig config = new PackageConfig();
+    private CacheManage mCacheManage;
+
 
     public static OfflinePackageManager getInstance() {
         if (instance == null) {
@@ -86,18 +92,20 @@ public class OfflinePackageManager {
         return instance;
     }
 
-    public void init(Context context) {
+    public void init(Context context,String baseUrl) {
         this.context = context;
         resourceManager = new ResourceManagerImpl(context);
         packageInstaller = new PackageInstallerImpl(context);
         FileDownloader.init(context);
+        this.baseUrl = baseUrl;
         validator = new DefaultPackageValidator(context);
-        if (config.isEnableAssets() && !TextUtils.isEmpty(config.getAssetPath())) {
-            assetResourceLoader = new AssetResourceLoaderImpl(context);
-            assetValidator = new DefaultAssetPackageValidator(context);
-            ensurePacakageThread();
-            packageHandler.sendEmptyMessage(WHAT_INIT_ASSETS);
-        }
+        mCacheManage = CacheManage.build(context).setCacheMode(new DiskLruCacheImpl(context));
+//        if (config.isEnableAssets() && !TextUtils.isEmpty(config.getAssetPath())) {
+//            assetResourceLoader = new AssetResourceLoaderImpl(context);
+//            assetValidator = new DefaultAssetPackageValidator(context);
+//            ensurePacakageThread();
+//            packageHandler.sendEmptyMessage(WHAT_INIT_ASSETS);
+//        }
     }
 
     public void setResouceValidator(ResoureceValidator validator) {
@@ -156,9 +164,9 @@ public class OfflinePackageManager {
         }
         PackageEntity netEntity = null;
         netEntity = GsonUtils.fromJsonIgnoreException(packageStr, PackageEntity.class);
-        willDownloadPackageInfoList = new ArrayList<>(2);
-        if (netEntity != null && netEntity.getItems() != null) {
-            willDownloadPackageInfoList.addAll(netEntity.getItems());
+        willDownloadPackageInfoList = new ArrayList<>();
+        if (netEntity != null && netEntity.getList() != null) {
+            willDownloadPackageInfoList.addAll(netEntity.getList());
         }
         /**
          * 不是第一次Load package
@@ -183,7 +191,7 @@ public class OfflinePackageManager {
         if (onlyUpdatePackageInfoList != null && onlyUpdatePackageInfoList.size() > 0) {
             for (PackageInfo packageInfo : onlyUpdatePackageInfoList) {
                 resourceManager.updateResource(packageInfo.getPackageId(), packageInfo.getVersion());
-                updateIndexFile(packageInfo.getPackageId(), packageInfo.getVersion());
+//                updateIndexFile(packageInfo.getPackageId(), packageInfo.getVersion());
                 synchronized (packageStatusMap) {
                     packageStatusMap.put(packageInfo.getPackageId(), STATUS_PACKAGE_CANUSE);
                 }
@@ -202,11 +210,11 @@ public class OfflinePackageManager {
             return;
         }
         localPackageEntity = GsonUtils.fromJsonIgnoreException(indexFis, PackageEntity.class);
-        if (localPackageEntity == null || localPackageEntity.getItems() == null) {
+        if (localPackageEntity == null || localPackageEntity.getList() == null) {
             return;
         }
         int index = 0;
-        for (PackageInfo localInfo : localPackageEntity.getItems()) {
+        for (PackageInfo localInfo : localPackageEntity.getList()) {
             if ((index = willDownloadPackageInfoList.indexOf(localInfo)) < 0) {
                 continue;
             }
@@ -217,13 +225,18 @@ public class OfflinePackageManager {
                 }
                 willDownloadPackageInfoList.remove(index);
                 if (onlyUpdatePackageInfoList == null) {
-                    onlyUpdatePackageInfoList = new ArrayList<>(2);
+                    onlyUpdatePackageInfoList = new ArrayList<>();
                 }
                 if (info.getStatus() == PackageStatus.onLine) {
                     onlyUpdatePackageInfoList.add(localInfo);
                 }
                 localInfo.setStatus(info.getStatus());
             } else {
+                if (!info.isPatch()) {
+                    info.setIsPatch(false);
+                } else {
+                    info.setIsPatch(true);
+                }
                 localInfo.setStatus(info.getStatus());
                 localInfo.setVersion(info.getVersion());
             }
@@ -264,9 +277,9 @@ public class OfflinePackageManager {
         if (localPackageEntity == null) {
             localPackageEntity = new PackageEntity();
         }
-        List<PackageInfo> packageInfoList = new ArrayList<>(2);
-        if (localPackageEntity.getItems() != null) {
-            packageInfoList.addAll(localPackageEntity.getItems());
+        List<PackageInfo> packageInfoList = new ArrayList<>();
+        if (localPackageEntity.getList() != null) {
+            packageInfoList.addAll(localPackageEntity.getList());
         }
         PackageInfo packageInfo = new PackageInfo();
         packageInfo.setPackageId(packageId);
@@ -278,9 +291,9 @@ public class OfflinePackageManager {
             packageInfo.setVersion(version);
             packageInfoList.add(packageInfo);
         }
-        localPackageEntity.setItems(packageInfoList);
-        if (localPackageEntity == null || localPackageEntity.getItems() == null
-            || localPackageEntity.getItems().size() == 0) {
+        localPackageEntity.setList(packageInfoList);
+        if (localPackageEntity == null || localPackageEntity.getList() == null
+                || localPackageEntity.getList().size() == 0) {
             return;
         }
         String updateStr = new Gson().toJson(localPackageEntity);
@@ -305,22 +318,25 @@ public class OfflinePackageManager {
     }
 
     public WebResourceResponse getResource(String url) {
-        synchronized (packageStatusMap) {
-            String packageId = resourceManager.getPackageId(url);
-            Integer status = packageStatusMap.get(packageId);
-            if (status == null) {
-                return null;
-            }
-            if (status != STATUS_PACKAGE_CANUSE) {
-                return null;
-            }
-        }
+//        synchronized (packageStatusMap) {
+//            String packageId = resourceManager.getPackageId(url);
+//            Integer status = packageStatusMap.get(packageId);
+//            if (status == null) {
+//                return null;
+//            }
+//            if (status != STATUS_PACKAGE_CANUSE) {
+//                return null;
+//            }
+//        }
         WebResourceResponse resourceResponse = null;
-        if (!resourceLock.tryLock()) {
-            return null;
+        synchronized (resourceManager) {
+            resourceResponse = resourceManager.getResource(url);
         }
-        resourceResponse = resourceManager.getResource(url);
-        resourceLock.unlock();
+//        if (!resourceLock.tryLock()) {
+//            return null;
+//        }
+
+//        resourceLock.unlock();
         return resourceResponse;
     }
 
@@ -364,9 +380,9 @@ public class OfflinePackageManager {
          * 安装
          * */
         if (packageInfo != null) {
-            boolean isValid = (isAssets && assetValidator.validate(packageInfo)) || validator.validate(packageInfo);
-            if (isValid) {
+            try {
                 resourceLock.lock();
+
                 boolean isSuccess = packageInstaller.install(packageInfo, isAssets);
                 resourceLock.unlock();
                 /**
@@ -379,7 +395,10 @@ public class OfflinePackageManager {
                         packageStatusMap.put(packageId, STATUS_PACKAGE_CANUSE);
                     }
                 }
+            }catch (Exception e){
+                e.printStackTrace();
             }
+
         }
     }
 
@@ -393,11 +412,28 @@ public class OfflinePackageManager {
         if (willDownloadPackageInfoList == null) {
             return;
         }
+        PackageInfo packageInfo = null;
+        PackageInfo temp = new PackageInfo();
+        temp.setPackageId(packageId);
         int pos = willDownloadPackageInfoList.indexOf(packageId);
         if (pos >= 0) {
-            willDownloadPackageInfoList.remove(pos);
+            willDownloadPackageInfoList.get(pos);
         }
-        allResouceUpdateFinished();
+        if (packageInfo != null && packageInfo.getDownFailCount() < 5){
+            packageInfo.setDownFailCount(packageInfo.getDownFailCount()+1);
+            Downloader downloader = new DownloaderImpl(context);
+            downloader.download(packageInfo,new DownloadCallback(this));
+        }else{
+            if(pos >= 0){
+                willDownloadPackageInfoList.remove(pos);
+            }
+            allResouceUpdateFinished();
+        }
+
+    }
+
+    public CacheManage getmCacheManage(){
+        return mCacheManage;
     }
 
     private void allResouceUpdateFinished() {
@@ -474,7 +510,7 @@ public class OfflinePackageManager {
         @Override
         public boolean validate(PackageInfo packageInfo) {
             String downloadFilePath =
-                FileUtils.getPackageDownloadName(context, packageInfo.getPackageId(), packageInfo.getVersion());
+                    FileUtils.getPackageDownloadName(context, packageInfo.getPackageId(), packageInfo.getVersion());
             File downloadFile = new File(downloadFilePath);
             if (downloadFile.exists() && MD5Utils.checkMD5(packageInfo.getMd5(), downloadFile)) {
                 return true;
@@ -493,7 +529,7 @@ public class OfflinePackageManager {
         @Override
         public boolean validate(PackageInfo packageInfo) {
             String downloadFilePath =
-                FileUtils.getPackageAssetsName(context, packageInfo.getPackageId(), packageInfo.getVersion());
+                    FileUtils.getPackageAssetsName(context, packageInfo.getPackageId(), packageInfo.getVersion());
             File downloadFile = new File(downloadFilePath);
             if (downloadFile.exists() && MD5Utils.checkMD5(packageInfo.getMd5(), downloadFile)) {
                 return true;

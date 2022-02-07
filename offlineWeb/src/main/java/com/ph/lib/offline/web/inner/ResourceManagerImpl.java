@@ -1,9 +1,12 @@
 package com.ph.lib.offline.web.inner;
 
 import android.content.Context;
+import android.content.pm.PackageManager;
 import android.os.Build;
 import android.text.TextUtils;
+import android.util.Log;
 
+import com.ph.lib.offline.web.OfflinePackageManager;
 import com.ph.lib.offline.web.core.Contants;
 import com.ph.lib.offline.web.core.ResourceInfo;
 import com.ph.lib.offline.web.core.ResourceInfoEntity;
@@ -15,6 +18,7 @@ import com.ph.lib.offline.web.core.util.GsonUtils;
 import com.ph.lib.offline.web.core.util.Logger;
 import com.ph.lib.offline.web.core.util.MD5Utils;
 import com.ph.lib.offline.web.core.util.MimeTypeUtils;
+import com.ph.lib.offline.web.core.util.VersionUtils;
 import com.tencent.smtt.export.external.interfaces.WebResourceResponse;
 
 import java.io.File;
@@ -55,12 +59,19 @@ public class ResourceManagerImpl implements ResourceManager {
     @Override
     public WebResourceResponse getResource(String url) {
         ResourceKey key = new ResourceKey(url);
-        if (!lock.tryLock()) {
-            return null;
-        }
+//        if (!lock.tryLock()) {
+//            return null;
+//        }
+//        Log.d("WebResourceResponse",url + "---"+)
         ResourceInfo resourceInfo = resourceInfoMap.get(key);
-        lock.unlock();
+//        lock.unlock();
         if (resourceInfo == null) {
+            resourceInfo = OfflinePackageManager.getInstance().getmCacheManage().getResourceInfo(key);
+            if (resourceInfo == null){
+                return null;
+            }else{
+                resourceInfoMap.put(key,resourceInfo);
+            }
             return null;
         }
         if (!MimeTypeUtils.checkIsSupportMimeType(resourceInfo.getMimeType())) {
@@ -102,7 +113,7 @@ public class ResourceManagerImpl implements ResourceManager {
         boolean isSuccess = false;
         String indexFileName =
             FileUtils.getPackageWorkName(context, packageId, version) + File.separator + Contants.RESOURCE_MIDDLE_PATH
-                + File.separator + Contants.RESOURCE_INDEX_NAME;
+                + File.separator+Contants.PACKAGE+File.separator + Contants.RESOURCE_INDEX_NAME;
         Logger.d("updateResource indexFileName: " + indexFileName);
         File indexFile = new File(indexFileName);
         if (!indexFile.exists()) {
@@ -149,9 +160,17 @@ public class ResourceManagerImpl implements ResourceManager {
             String path = resourceInfo.getPath();
             path = path.startsWith(File.separator) ? path.substring(1) : path;
             resourceInfo.setLocalPath(
-                workPath + File.separator + Contants.RESOURCE_MIDDLE_PATH + File.separator + path);
+                workPath + File.separator + Contants.RESOURCE_MIDDLE_PATH + File.separator+Contants.PACKAGE+File.separator + path);
             lock.lock();
-            resourceInfoMap.put(new ResourceKey(resourceInfo.getRemoteUrl()), resourceInfo);
+
+            String remoteUrl = VersionUtils.getBaseUrl(OfflinePackageManager.getInstance().baseUrl)+resourceInfo.getRemoteUrl();
+            ResourceKey key = new ResourceKey(remoteUrl);
+            if(resourceInfoMap.get(key) == null){
+                resourceInfoMap.put(key,resourceInfo);
+            }
+            if(OfflinePackageManager.getInstance().getmCacheManage().getResourceInfo(key) == null){
+                OfflinePackageManager.getInstance().getmCacheManage().saveResourceInfo(key,resourceInfo);
+            }
             lock.unlock();
         }
         return isSuccess;
@@ -183,11 +202,20 @@ public class ResourceManagerImpl implements ResourceManager {
                 return false;
             }
             int size = 0;
+            InputStream inputStream = null;
             try {
-                InputStream inputStream = FileUtils.getInputStream(resourceInfo.getLocalPath());
+                inputStream = FileUtils.getInputStream(resourceInfo.getLocalPath());
                 size = inputStream.available();
             } catch (IOException e) {
                 Logger.e("resource file is error " + e.getMessage());
+            }finally {
+                if(inputStream != null){
+                    try {
+                        inputStream.close();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
             }
             if (size == 0) {
                 Logger.e("resource file is error ");

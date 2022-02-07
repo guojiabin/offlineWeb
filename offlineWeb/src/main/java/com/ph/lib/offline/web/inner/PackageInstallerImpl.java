@@ -18,11 +18,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * created by yangjianjun on 2018/10/26
+ * created by guojiabin on 2022/1/26
  * 单个离线包安装器
  */
 public class PackageInstallerImpl implements PackageInstaller {
     private Context context;
+    private final static String TAG = "PackageInstallerImpl";
 
     public PackageInstallerImpl(Context context) {
         this.context = context;
@@ -147,10 +148,10 @@ public class PackageInstallerImpl implements PackageInstaller {
             return "";
         }
         PackageEntity localPackageEntity = GsonUtils.fromJsonIgnoreException(indexFis, PackageEntity.class);
-        if (localPackageEntity == null || localPackageEntity.getItems() == null) {
+        if (localPackageEntity == null || localPackageEntity.getList() == null) {
             return "";
         }
-        List<PackageInfo> list = localPackageEntity.getItems();
+        List<PackageInfo> list = localPackageEntity.getList();
         PackageInfo info = new PackageInfo();
         info.setPackageId(packageId);
         int index = list.indexOf(info);

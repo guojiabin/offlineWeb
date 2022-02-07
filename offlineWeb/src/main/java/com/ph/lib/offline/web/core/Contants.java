@@ -6,6 +6,11 @@ package com.ph.lib.offline.web.core;
  */
 public class Contants {
 
+    public static final String BASE_URL = "https://static.puhuiboss.com/pad-web/";
+
+    public static final String ALI_TEST_BASE_URL = "https://static-ali-test.puhuiboss.com/pad-web/";
+    public static final String DEMO_PRE_BASE_URL = "https://static-test.puhuiboss.com/pad-web/";
+
     /***
      * 所有离线包的根目录
      * */
@@ -14,7 +19,7 @@ public class Contants {
     /***
      * 配置信息
      * */
-    public static final String PACKAGE_FILE_PACKAGE_INDEX = "package.json";
+    public static final String PACKAGE_FILE_PACKAGE_INDEX = "packageIndex.json";
     /***
      * 每个离线包的索引信息文件
      * */
@@ -50,7 +55,12 @@ public class Contants {
     /**
      * 中间路径
      */
-    public static final String RESOURCE_MIDDLE_PATH = "package";
+    public static final String RESOURCE_MIDDLE_PATH = "static";
+
+    /**
+     * 中间路径
+     */
+    public static final String PACKAGE = "package";
 
     /**
      * asstes文件名称

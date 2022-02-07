@@ -3,7 +3,9 @@ package com.ph.lib.offline.web.core.util;
 import android.content.Context;
 import android.os.Environment;
 import android.text.TextUtils;
+import android.util.Log;
 
+import com.ph.lib.offline.web.OfflinePackageManager;
 import com.ph.lib.offline.web.core.Contants;
 
 import java.io.BufferedInputStream;
@@ -228,13 +230,18 @@ public class FileUtils {
     public static File getFileDirectory(Context context, boolean preferExternal) {
         File appCacheDir = null;
         if (preferExternal && isExternalStorageMounted()) {
-            appCacheDir = getExternalCacheDir(context);
+//            appCacheDir = getExternalCacheDir(context);
+            appCacheDir = context.getExternalFilesDir(VersionUtils.getPackageDir(OfflinePackageManager.getInstance().baseUrl));
         }
         if (appCacheDir == null) {
             appCacheDir = context.getFilesDir();
+            if (appCacheDir != null){
+                String path = appCacheDir.getAbsolutePath() + VersionUtils.getBaseUrl(OfflinePackageManager.getInstance().baseUrl);
+                appCacheDir = new File(path);
+            }
         }
         if (appCacheDir == null) {
-            String cacheDirPath = "/data/data/" + context.getPackageName() + "/file/";
+            String cacheDirPath = "/data/data/" + context.getPackageName() + "/file/"+VersionUtils.getPackageDir(OfflinePackageManager.getInstance().baseUrl);
             appCacheDir = new File(cacheDirPath);
         }
         return appCacheDir;
@@ -243,7 +250,7 @@ public class FileUtils {
     public static File getResourceIndexFile(Context context, String packageId, String version) {
         String indexPath =
             getPackageWorkName(context, packageId, version) + File.separator + Contants.RESOURCE_MIDDLE_PATH
-                + File.separator + Contants.RESOURCE_INDEX_NAME;
+                + File.separator + Contants.PACKAGE + File.separator + Contants.RESOURCE_INDEX_NAME;
         return new File(indexPath);
     }
 
@@ -574,12 +581,14 @@ public class FileUtils {
             return "";
         }
         String szName;
+        String zipName = zipEntry.getName().split("\\/")[0];
+        Log.d(TAG,"zipName>>>>>"+zipName);
         while (zipEntry != null) {
             szName = zipEntry.getName();
             /**
              * 是index.json
              */
-            if (szName.equals(Contants.RESOURCE_MIDDLE_PATH + File.separator + Contants.RESOURCE_INDEX_NAME)) {
+            if (szName.equals(zipName + File.separator + Contants.RESOURCE_INDEX_NAME)) {
                 break;
             }
             if (!isSuccess) {

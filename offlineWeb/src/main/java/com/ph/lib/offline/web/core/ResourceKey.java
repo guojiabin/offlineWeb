@@ -13,12 +13,21 @@ public class ResourceKey {
     private String host;
     private String schema;
     private List<String> pathList;
+    private String url;
 
     public ResourceKey(String url) {
         Uri uri = Uri.parse(url);
         host = uri.getHost();
         schema = uri.getScheme();
         pathList = uri.getPathSegments();
+    }
+
+    public String getUrl() {
+        return url;
+    }
+
+    public void setUrl(String url) {
+        this.url = url;
     }
 
     @Override

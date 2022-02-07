@@ -1,5 +1,9 @@
 package com.ph.lib.offline.web.core.util;
 
+import android.text.TextUtils;
+
+import com.ph.lib.offline.web.core.Contants;
+
 /**
  * created by guojiabin on 2022/1/24
  * 版本工具
@@ -39,4 +43,65 @@ public class VersionUtils {
         diff = (diff != 0) ? diff : versionArray1.length - versionArray2.length;
         return diff;
     }
+
+    /**
+     * 比较2个版本 currentVersion 长度和newVersion长度不一致，返回true
+     * @param currentVersion
+     * @param newVersion
+     * @return
+     */
+    public static boolean compareVersionName(String currentVersion,String newVersion){
+        if(TextUtils.isEmpty(currentVersion) || TextUtils.isEmpty(newVersion)){
+            return false;
+        }
+        String[] currentVersionArray = currentVersion.split("\\.");
+        String[] newVersionArray = newVersion.split("\\.");
+        if (currentVersionArray == null || currentVersionArray.length <= 0 || newVersionArray == null  || newVersionArray.length <= 0){
+            return false;
+        }
+        if (currentVersionArray.length != newVersionArray.length){
+            return true;
+        }
+        boolean newFlag = false;
+        for (int i = 0; i < currentVersionArray.length; i++) {
+            if (Integer.parseInt(currentVersionArray[i]) > Integer.parseInt(newVersionArray[i])){
+                newFlag = false;
+                break;
+            }else if (Integer.parseInt(currentVersionArray[i]) < Integer.parseInt(newVersionArray[i])){
+                newFlag = true;
+                break;
+            }
+        }
+        return newFlag;
+    }
+
+    // 根据不同的环境，h5离线包放置在不同的服务器上
+    public static String getBaseUrl(String baseUrl){
+        String baseTypeUrl = Contants.BASE_URL;
+
+        if (TextUtils.isEmpty(baseUrl)){
+            return baseTypeUrl;
+        }
+
+        if(baseUrl.contains("ali-test")){
+            baseTypeUrl = Contants.ALI_TEST_BASE_URL;
+        }else if(baseUrl.contains("demo-pre") || baseUrl.contains("demo")){
+            baseTypeUrl = Contants.DEMO_PRE_BASE_URL;
+        }
+        return baseTypeUrl;
+    }
+
+    // 根据不同的环境，H5离线包放置在不同的文件夹中
+    public static String getPackageDir(String baseUrl){
+        String baseTypeUrl = "prod";
+        if(baseUrl.contains("ali-test")){
+            baseTypeUrl = "ali-test";
+        }else if (baseUrl.contains("demo-pre")){
+            baseTypeUrl = "demo-pre";
+        }else if (baseUrl.contains("demo")){
+            baseTypeUrl = "demo";
+        }
+        return baseTypeUrl;
+    }
+
 }

@@ -19,7 +19,7 @@ public class PackageInfo {
      *
      * 离线包版本号
      * */
-    private String version = "1.0";
+    private String version;
 
     /***
      * 离线包的状态 {@link PackageStatus}
@@ -29,12 +29,27 @@ public class PackageInfo {
     /**
      * 是否是patch包
      */
-    private boolean isPatch;
+    private boolean is_patch;
 
     /**
      * 离线包md值 由后端下发
      */
     private String md5;
+
+    public void setDownloadUrl(String downloadUrl) {
+        this.downloadUrl = downloadUrl;
+    }
+
+    public int getDownFailCount() {
+        return downFailCount;
+    }
+
+    public void setDownFailCount(int downFailCount) {
+        this.downFailCount = downFailCount;
+    }
+
+    // 下载离线包失败次数 下载最多重新下载5次
+    private int downFailCount;
 
     public String getPackageId() {
         return packageId;
@@ -53,7 +68,11 @@ public class PackageInfo {
     }
 
     public boolean isPatch() {
-        return isPatch;
+        return is_patch;
+    }
+
+    public void setIsPatch(boolean isPatch){
+        this.is_patch = isPatch;
     }
 
     public String getMd5() {
