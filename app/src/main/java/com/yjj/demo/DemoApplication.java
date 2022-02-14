@@ -12,7 +12,7 @@ public class DemoApplication extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
-        OfflinePackageManager.getInstance().init(this);
+        OfflinePackageManager.getInstance().init(this,"");
         OfflinePackageManager.getInstance().update(getPackageInfo());
     }
 
