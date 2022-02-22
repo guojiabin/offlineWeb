@@ -1,13 +1,14 @@
 apply plugin: 'com.android.library'
+apply plugin: 'maven'
 
 android {
-    compileSdkVersion 28
+    compileSdkVersion 29
 
 
 
     defaultConfig {
         minSdkVersion 16
-        targetSdkVersion 28
+        targetSdkVersion 29
         versionCode 1
         versionName "1.0"
     }
@@ -25,12 +26,38 @@ android {
     }
 }
 
+
+uploadArchives {
+//    configuration = configurations.archives
+    repositories {
+        mavenDeployer {
+            repository(url: uri('../repository'))
+            pom.project {
+                name 'offlineWebLibrary'
+                artifactId 'offlineWebLibrary'
+                groupId 'com.ph.offlineWebLibrary'
+                version '1.0.0'
+                packaging 'aar'
+                description 'offlineWebLibrary'
+
+                licenses {
+                    license {
+                        name 'The Apache Software License, Version 2.0'
+                        url 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+                        distribution 'repo'
+                    }
+                }
+            }
+        }
+    }
+}
+
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     implementation 'com.liulishuo.filedownloader:library:1.7.5'
     implementation 'com.google.code.gson:gson:2.7'
     implementation 'androidx.appcompat:appcompat:1.0.0'
     implementation 'androidx.core:core:1.0.1'
-    api 'com.tencent.tbs.tbssdk:sdk:43967'
+    implementation 'com.tencent.tbs.tbssdk:sdk:43967'
     implementation 'com.jakewharton:disklrucache:2.0.2'
 }
