@@ -109,7 +109,7 @@ public class ResourceManagerImpl implements ResourceManager {
     }
 
     @Override
-    public boolean updateResource(String packageId, String version) {
+    public boolean updateResource(String packageId, String version,String baseUrl) {
         boolean isSuccess = false;
         String indexFileName =
             FileUtils.getPackageWorkName(context, packageId, version) + File.separator + Contants.RESOURCE_MIDDLE_PATH
@@ -163,7 +163,7 @@ public class ResourceManagerImpl implements ResourceManager {
                 workPath + File.separator + Contants.RESOURCE_MIDDLE_PATH + File.separator+Contants.PACKAGE+File.separator + path);
             lock.lock();
 
-            String remoteUrl = VersionUtils.getBaseUrl(OfflinePackageManager.getInstance().baseUrl)+resourceInfo.getRemoteUrl();
+            String remoteUrl = baseUrl+resourceInfo.getRemoteUrl();
             ResourceKey key = new ResourceKey(remoteUrl);
             if(resourceInfoMap.get(key) == null){
                 resourceInfoMap.put(key,resourceInfo);

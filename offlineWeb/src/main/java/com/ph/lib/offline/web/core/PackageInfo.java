@@ -36,6 +36,16 @@ public class PackageInfo {
      */
     private String md5;
 
+    private String baseUrl;
+
+    public String getBaseUrl() {
+        return baseUrl;
+    }
+
+    public void setBaseUrl(String baseUrl) {
+        this.baseUrl = baseUrl;
+    }
+
     public void setDownloadUrl(String downloadUrl) {
         this.downloadUrl = downloadUrl;
     }

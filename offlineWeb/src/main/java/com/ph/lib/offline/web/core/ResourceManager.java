@@ -10,7 +10,7 @@ import com.tencent.smtt.export.external.interfaces.WebResourceResponse;
 public interface ResourceManager {
     WebResourceResponse getResource(String url);
 
-    boolean updateResource(String packageId, String version);
+    boolean updateResource(String packageId, String version,String baseUrl);
 
     void setResourceValidator(ResoureceValidator validator);
 

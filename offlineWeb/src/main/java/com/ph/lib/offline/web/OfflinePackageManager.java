@@ -190,7 +190,7 @@ public class OfflinePackageManager {
         }
         if (onlyUpdatePackageInfoList != null && onlyUpdatePackageInfoList.size() > 0) {
             for (PackageInfo packageInfo : onlyUpdatePackageInfoList) {
-                resourceManager.updateResource(packageInfo.getPackageId(), packageInfo.getVersion());
+                resourceManager.updateResource(packageInfo.getPackageId(), packageInfo.getVersion(),packageInfo.getBaseUrl());
 //                updateIndexFile(packageInfo.getPackageId(), packageInfo.getVersion());
                 synchronized (packageStatusMap) {
                     packageStatusMap.put(packageInfo.getPackageId(), STATUS_PACKAGE_CANUSE);
@@ -389,7 +389,7 @@ public class OfflinePackageManager {
                  * 安装失败情况下，不做任何处理，因为资源既然资源需要最新资源，失败了，就没有必要再用缓存了
                  */
                 if (isSuccess) {
-                    resourceManager.updateResource(packageInfo.getPackageId(), packageInfo.getVersion());
+                    resourceManager.updateResource(packageInfo.getPackageId(), packageInfo.getVersion(),packageInfo.getBaseUrl());
                     updateIndexFile(packageInfo.getPackageId(), packageInfo.getVersion());
                     synchronized (packageStatusMap) {
                         packageStatusMap.put(packageId, STATUS_PACKAGE_CANUSE);
