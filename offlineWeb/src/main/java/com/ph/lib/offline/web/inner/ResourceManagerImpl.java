@@ -72,6 +72,8 @@ public class ResourceManagerImpl implements ResourceManager {
             }else{
                 resourceInfoMap.put(key,resourceInfo);
             }
+        }
+        if (resourceInfo == null){
             return null;
         }
         if (!MimeTypeUtils.checkIsSupportMimeType(resourceInfo.getMimeType())) {
