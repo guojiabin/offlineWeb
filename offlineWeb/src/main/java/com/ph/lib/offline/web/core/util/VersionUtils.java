@@ -93,13 +93,13 @@ public class VersionUtils {
 
     // 根据不同的环境，H5离线包放置在不同的文件夹中
     public static String getPackageDir(String baseUrl){
-        String baseTypeUrl = "prod";
+        String baseTypeUrl = "/prod";
         if(baseUrl.contains("ali-test")){
-            baseTypeUrl = "ali-test";
+            baseTypeUrl = "/ali-test";
         }else if (baseUrl.contains("demo-pre")){
-            baseTypeUrl = "demo-pre";
+            baseTypeUrl = "/demo-pre";
         }else if (baseUrl.contains("demo")){
-            baseTypeUrl = "demo";
+            baseTypeUrl = "/demo";
         }
         return baseTypeUrl;
     }

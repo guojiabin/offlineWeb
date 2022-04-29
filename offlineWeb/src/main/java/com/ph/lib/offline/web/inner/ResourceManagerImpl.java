@@ -65,14 +65,14 @@ public class ResourceManagerImpl implements ResourceManager {
 //        Log.d("WebResourceResponse",url + "---"+)
         ResourceInfo resourceInfo = resourceInfoMap.get(key);
 //        lock.unlock();
-        if (resourceInfo == null) {
-            resourceInfo = OfflinePackageManager.getInstance().getmCacheManage().getResourceInfo(key);
-            if (resourceInfo == null){
-                return null;
-            }else{
-                resourceInfoMap.put(key,resourceInfo);
-            }
-        }
+//        if (resourceInfo == null) {
+//            resourceInfo = OfflinePackageManager.getInstance().getmCacheManage().getResourceInfo(key);
+//            if (resourceInfo == null){
+//                return null;
+//            }else{
+//                resourceInfoMap.put(key,resourceInfo);
+//            }
+//        }
         if (resourceInfo == null){
             return null;
         }
@@ -130,6 +130,7 @@ public class ResourceManagerImpl implements ResourceManager {
         try {
             indexFis = new FileInputStream(indexFile);
         } catch (FileNotFoundException e) {
+            Log.d("guojiabin-FileNotFound-",e.getMessage());
 
         }
         if (indexFis == null) {
@@ -142,7 +143,7 @@ public class ResourceManagerImpl implements ResourceManager {
             try {
                 indexFis.close();
             } catch (IOException e) {
-
+                Log.d("guojiabin-IOException-",e.getMessage());
             }
         }
         if (entity == null) {
@@ -166,13 +167,14 @@ public class ResourceManagerImpl implements ResourceManager {
             lock.lock();
 
             String remoteUrl = baseUrl+resourceInfo.getRemoteUrl();
+
             ResourceKey key = new ResourceKey(remoteUrl);
             if(resourceInfoMap.get(key) == null){
                 resourceInfoMap.put(key,resourceInfo);
             }
-            if(OfflinePackageManager.getInstance().getmCacheManage().getResourceInfo(key) == null){
-                OfflinePackageManager.getInstance().getmCacheManage().saveResourceInfo(key,resourceInfo);
-            }
+//            if(OfflinePackageManager.getInstance().getmCacheManage().getResourceInfo(key) == null){
+//                OfflinePackageManager.getInstance().getmCacheManage().saveResourceInfo(key,resourceInfo);
+//            }
             lock.unlock();
         }
         return isSuccess;

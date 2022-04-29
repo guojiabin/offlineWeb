@@ -6,10 +6,10 @@ package com.ph.lib.offline.web.core;
  */
 public class Contants {
 
-    public static final String BASE_URL = "https://static.puhuiboss.com/pad-web/";
+    public static final String BASE_URL = "https://static.puhuiboss.com/set-work/";
 
-    public static final String ALI_TEST_BASE_URL = "https://static-ali-test.puhuiboss.com/pad-web/";
-    public static final String DEMO_PRE_BASE_URL = "https://static-test.puhuiboss.com/pad-web/";
+    public static final String ALI_TEST_BASE_URL = "https://static-ali-test.puhuiboss.com/set-work/";
+    public static final String DEMO_PRE_BASE_URL = "https://static-test.puhuiboss.com/set-work/";
 
     /***
      * 所有离线包的根目录

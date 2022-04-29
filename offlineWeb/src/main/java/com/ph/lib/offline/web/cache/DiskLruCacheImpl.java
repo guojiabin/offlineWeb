@@ -2,6 +2,9 @@ package com.ph.lib.offline.web.cache;
 
 import android.content.Context;
 import android.os.Environment;
+import android.text.TextUtils;
+import android.util.Log;
+
 import com.jakewharton.disklrucache.DiskLruCache;
 import com.ph.lib.offline.web.core.ResourceInfo;
 import com.ph.lib.offline.web.core.ResourceKey;
@@ -35,28 +38,42 @@ public class DiskLruCacheImpl implements ICache{
         }
         ObjectOutputStream fos = null;
         OutputStream outputStream = null;
+        DiskLruCache.Editor editor = null;
         try {
-            DiskLruCache.Editor editor = mDiskLruCache.edit(hasKeyFromUrl(key.getUrl()));
+            editor = mDiskLruCache.edit(hasKeyFromUrl(key.getUrl()));
+            Log.e("guojiabin","editor----"+editor);
             outputStream = editor.newOutputStream(0);
+            Log.e("guojiabin-","outputStream-----"+outputStream);
             fos = new ObjectOutputStream(outputStream);
             fos.writeObject(packageInfo);
             editor.commit();
             mDiskLruCache.flush();
         }catch (IOException e){
-            e.printStackTrace();
+            try {
+                editor.abort();
+            } catch (IOException ioException) {
+                ioException.printStackTrace();
+            }
+            Log.d("guojiabin--111-",e.getMessage());
+//            e.printStackTrace();
         }finally {
+            try {
+                editor.abort();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
             if(fos != null){
                 try {
                     fos.close();
                 }catch (IOException e){
-                    e.printStackTrace();
+//                    e.printStackTrace();
                 }
             }
             if(outputStream != null){
                 try {
                     outputStream.close();
                 }catch (IOException e){
-                    e.printStackTrace();
+//                    e.printStackTrace();
                 }
             }
         }
@@ -71,6 +88,9 @@ public class DiskLruCacheImpl implements ICache{
     private String hasKeyFromUrl(String url) {
         String cacheKey;
         try {
+            if (TextUtils.isEmpty(url)){
+                return null;
+            }
             final MessageDigest messageDigest = MessageDigest.getInstance("MD5");
             messageDigest.update(url.getBytes());
             cacheKey = byteToHexString(messageDigest.digest());

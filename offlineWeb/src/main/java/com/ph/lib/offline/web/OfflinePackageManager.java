@@ -6,6 +6,7 @@ import android.os.HandlerThread;
 import android.os.Looper;
 import android.os.Message;
 import android.text.TextUtils;
+import android.util.Log;
 
 import com.google.gson.Gson;
 import com.liulishuo.filedownloader.FileDownloader;
@@ -99,7 +100,7 @@ public class OfflinePackageManager {
         FileDownloader.init(context);
         this.baseUrl = baseUrl;
         validator = new DefaultPackageValidator(context);
-        mCacheManage = CacheManage.build(context).setCacheMode(new DiskLruCacheImpl(context));
+//        mCacheManage = CacheManage.build(context).setCacheMode(new DiskLruCacheImpl(context));
 //        if (config.isEnableAssets() && !TextUtils.isEmpty(config.getAssetPath())) {
 //            assetResourceLoader = new AssetResourceLoaderImpl(context);
 //            assetValidator = new DefaultAssetPackageValidator(context);
@@ -160,6 +161,7 @@ public class OfflinePackageManager {
          * */
         boolean isFirstLoadPackage = false;
         if (!packageIndexFile.exists()) {
+            Log.d("guojiabin------","0000000");
             isFirstLoadPackage = true;
         }
         PackageEntity netEntity = null;
@@ -191,7 +193,7 @@ public class OfflinePackageManager {
         if (onlyUpdatePackageInfoList != null && onlyUpdatePackageInfoList.size() > 0) {
             for (PackageInfo packageInfo : onlyUpdatePackageInfoList) {
                 resourceManager.updateResource(packageInfo.getPackageId(), packageInfo.getVersion(),packageInfo.getBaseUrl());
-//                updateIndexFile(packageInfo.getPackageId(), packageInfo.getVersion());
+                updateIndexFile(packageInfo.getPackageId(), packageInfo.getVersion());
                 synchronized (packageStatusMap) {
                     packageStatusMap.put(packageInfo.getPackageId(), STATUS_PACKAGE_CANUSE);
                 }
@@ -379,27 +381,32 @@ public class OfflinePackageManager {
         /**
          * 安装
          * */
-        if (packageInfo != null) {
-            try {
-                resourceLock.lock();
+        synchronized (OfflinePackageManager.class){
+            if (packageInfo != null) {
+                try {
+//                resourceLock.lock();
 
-                boolean isSuccess = packageInstaller.install(packageInfo, isAssets);
-                resourceLock.unlock();
-                /**
-                 * 安装失败情况下，不做任何处理，因为资源既然资源需要最新资源，失败了，就没有必要再用缓存了
-                 */
-                if (isSuccess) {
-                    resourceManager.updateResource(packageInfo.getPackageId(), packageInfo.getVersion(),packageInfo.getBaseUrl());
-                    updateIndexFile(packageInfo.getPackageId(), packageInfo.getVersion());
-                    synchronized (packageStatusMap) {
-                        packageStatusMap.put(packageId, STATUS_PACKAGE_CANUSE);
+                    boolean isSuccess = packageInstaller.install(packageInfo, isAssets);
+
+                    /**
+                     * 安装失败情况下，不做任何处理，因为资源既然资源需要最新资源，失败了，就没有必要再用缓存了
+                     */
+                    if (isSuccess) {
+                        resourceManager.updateResource(packageInfo.getPackageId(), packageInfo.getVersion(),packageInfo.getBaseUrl());
+                        updateIndexFile(packageInfo.getPackageId(), packageInfo.getVersion());
+                        synchronized (packageStatusMap) {
+                            packageStatusMap.put(packageId, STATUS_PACKAGE_CANUSE);
+                        }
                     }
+//                resourceLock.unlock();
+                }catch (Exception e){
+                    Log.d("OfflinePackageManager",e.getMessage());
+//                e.printStackTrace();
                 }
-            }catch (Exception e){
-                e.printStackTrace();
-            }
 
+            }
         }
+
     }
 
     /**
@@ -412,6 +419,7 @@ public class OfflinePackageManager {
         if (willDownloadPackageInfoList == null) {
             return;
         }
+        Log.d("guojiabin","performDownloadFailure");
         PackageInfo packageInfo = null;
         PackageInfo temp = new PackageInfo();
         temp.setPackageId(packageId);

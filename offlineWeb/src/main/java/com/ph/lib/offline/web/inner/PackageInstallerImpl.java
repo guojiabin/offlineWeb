@@ -2,6 +2,7 @@ package com.ph.lib.offline.web.inner;
 
 import android.content.Context;
 import android.text.TextUtils;
+import android.util.Log;
 
 import com.ph.lib.offline.web.core.PackageEntity;
 import com.ph.lib.offline.web.core.PackageInfo;
@@ -97,7 +98,6 @@ public class PackageInstallerImpl implements PackageInstaller {
          * 解压成功
          */
         String workPath = FileUtils.getPackageWorkName(context, packageInfo.getPackageId(), packageInfo.getVersion());
-
         try {
             isSuccess = FileUtils.unZipFolder(updateFile, workPath);
         } catch (Exception e) {

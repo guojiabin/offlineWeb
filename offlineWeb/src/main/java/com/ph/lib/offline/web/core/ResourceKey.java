@@ -16,6 +16,7 @@ public class ResourceKey {
     private String url;
 
     public ResourceKey(String url) {
+        this.url = url;
         Uri uri = Uri.parse(url);
         host = uri.getHost();
         schema = uri.getScheme();

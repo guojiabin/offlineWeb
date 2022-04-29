@@ -9,6 +9,7 @@ import com.ph.lib.offline.web.OfflinePackageManager;
 import com.ph.lib.offline.web.core.Contants;
 
 import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
 import java.io.Closeable;
 import java.io.File;
 import java.io.FileInputStream;
@@ -55,6 +56,8 @@ public class FileUtils {
         return new BufferedInputStream(fileInputStream);
     }
 
+
+
     /**
      * 解压zip到指定的路径
      *
@@ -78,18 +81,18 @@ public class FileUtils {
             /**
              * 不是package开头，认为是无效数据
              */
-            if (!szName.startsWith(Contants.RESOURCE_MIDDLE_PATH)) {
-                zipEntry = readZipNextZipEntry(inZip);
-                continue;
-            }
+
             if (zipEntry.isDirectory()) {
                 szName = szName.substring(0, szName.length() - 1);
                 File folder = new File(outPathString + File.separator + szName);
-                isSuccess = folder.mkdirs();
+                if (!folder.exists()){
+                    isSuccess = folder.mkdirs();
+                }
                 if (!isSuccess) {
                     break;
                 }
             } else {
+
                 File file = new File(outPathString + File.separator + szName);
                 if (!file.exists()) {
                     isSuccess = makeUnZipFile(outPathString, szName);
@@ -105,6 +108,23 @@ public class FileUtils {
             zipEntry = readZipNextZipEntry(inZip);
         }
         isSuccess = safeCloseFile(inZip);
+        return isSuccess;
+    }
+
+    private static boolean makeUnZipFile(String outPathString, String szName) {
+        boolean isSuccess = true;
+        File file = new File(outPathString + File.separator + szName);
+        if (file.getParentFile() != null && !file.getParentFile().exists()) {
+            isSuccess = file.getParentFile().mkdirs();
+        }
+        if (!isSuccess) {
+            return false;
+        }
+        try {
+            isSuccess = file.createNewFile();
+        } catch (IOException e) {
+            isSuccess = false;
+        }
         return isSuccess;
     }
 
@@ -127,23 +147,6 @@ public class FileUtils {
             return null;
         }
         return inZip;
-    }
-
-    private static boolean makeUnZipFile(String outPathString, String szName) {
-        boolean isSuccess = true;
-        File file = new File(outPathString + File.separator + szName);
-        if (file.getParentFile() != null && !file.getParentFile().exists()) {
-            isSuccess = file.getParentFile().mkdirs();
-        }
-        if (!isSuccess) {
-            return false;
-        }
-        try {
-            isSuccess = file.createNewFile();
-        } catch (IOException e) {
-            isSuccess = false;
-        }
-        return isSuccess;
     }
 
     /**
@@ -236,7 +239,7 @@ public class FileUtils {
         if (appCacheDir == null) {
             appCacheDir = context.getFilesDir();
             if (appCacheDir != null){
-                String path = appCacheDir.getAbsolutePath() + VersionUtils.getBaseUrl(OfflinePackageManager.getInstance().baseUrl);
+                String path = appCacheDir.getAbsolutePath() + VersionUtils.getPackageDir(OfflinePackageManager.getInstance().baseUrl);
                 appCacheDir = new File(path);
             }
         }
@@ -283,7 +286,7 @@ public class FileUtils {
      * 获取根容器的地址
      */
     public static String getPackageRootPath(Context context) {
-        File fileDir = getFileDirectory(context, false);
+        File fileDir = getFileDirectory(context, true);
         if (fileDir == null) {
             return null;
         }
