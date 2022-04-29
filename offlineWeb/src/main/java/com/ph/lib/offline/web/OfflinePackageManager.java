@@ -161,7 +161,6 @@ public class OfflinePackageManager {
          * */
         boolean isFirstLoadPackage = false;
         if (!packageIndexFile.exists()) {
-            Log.d("guojiabin------","0000000");
             isFirstLoadPackage = true;
         }
         PackageEntity netEntity = null;
@@ -193,7 +192,7 @@ public class OfflinePackageManager {
         if (onlyUpdatePackageInfoList != null && onlyUpdatePackageInfoList.size() > 0) {
             for (PackageInfo packageInfo : onlyUpdatePackageInfoList) {
                 resourceManager.updateResource(packageInfo.getPackageId(), packageInfo.getVersion(),packageInfo.getBaseUrl());
-                updateIndexFile(packageInfo.getPackageId(), packageInfo.getVersion());
+                updateIndexFile(packageInfo.getPackageId(), packageInfo.getVersion(),packageInfo.getBaseUrl());
                 synchronized (packageStatusMap) {
                     packageStatusMap.put(packageInfo.getPackageId(), STATUS_PACKAGE_CANUSE);
                 }
@@ -250,7 +249,7 @@ public class OfflinePackageManager {
         return indexFile.exists() && indexFile.isFile();
     }
 
-    private void updateIndexFile(String packageId, String version) {
+    private void updateIndexFile(String packageId, String version,String baseUrl) {
         String packageIndexFileName = FileUtils.getPackageIndexFileName(context);
         File packageIndexFile = new File(packageIndexFileName);
         if (!packageIndexFile.exists()) {
@@ -284,6 +283,7 @@ public class OfflinePackageManager {
             packageInfoList.addAll(localPackageEntity.getList());
         }
         PackageInfo packageInfo = new PackageInfo();
+        packageInfo.setBaseUrl(baseUrl);
         packageInfo.setPackageId(packageId);
         int index = 0;
         if ((index = packageInfoList.indexOf(packageInfo)) >= 0) {
@@ -393,7 +393,7 @@ public class OfflinePackageManager {
                      */
                     if (isSuccess) {
                         resourceManager.updateResource(packageInfo.getPackageId(), packageInfo.getVersion(),packageInfo.getBaseUrl());
-                        updateIndexFile(packageInfo.getPackageId(), packageInfo.getVersion());
+                        updateIndexFile(packageInfo.getPackageId(), packageInfo.getVersion(),packageInfo.getBaseUrl());
                         synchronized (packageStatusMap) {
                             packageStatusMap.put(packageId, STATUS_PACKAGE_CANUSE);
                         }

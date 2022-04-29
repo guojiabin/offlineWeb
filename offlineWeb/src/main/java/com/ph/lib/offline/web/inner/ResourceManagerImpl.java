@@ -64,15 +64,6 @@ public class ResourceManagerImpl implements ResourceManager {
 //        }
 //        Log.d("WebResourceResponse",url + "---"+)
         ResourceInfo resourceInfo = resourceInfoMap.get(key);
-//        lock.unlock();
-//        if (resourceInfo == null) {
-//            resourceInfo = OfflinePackageManager.getInstance().getmCacheManage().getResourceInfo(key);
-//            if (resourceInfo == null){
-//                return null;
-//            }else{
-//                resourceInfoMap.put(key,resourceInfo);
-//            }
-//        }
         if (resourceInfo == null){
             return null;
         }
@@ -172,9 +163,6 @@ public class ResourceManagerImpl implements ResourceManager {
             if(resourceInfoMap.get(key) == null){
                 resourceInfoMap.put(key,resourceInfo);
             }
-//            if(OfflinePackageManager.getInstance().getmCacheManage().getResourceInfo(key) == null){
-//                OfflinePackageManager.getInstance().getmCacheManage().saveResourceInfo(key,resourceInfo);
-//            }
             lock.unlock();
         }
         return isSuccess;
