@@ -331,9 +331,9 @@ public class OfflinePackageManager {
 //            }
 //        }
         WebResourceResponse resourceResponse = null;
-        synchronized (resourceManager) {
+//        synchronized (resourceManager) {
             resourceResponse = resourceManager.getResource(url);
-        }
+//        }
 //        if (!resourceLock.tryLock()) {
 //            return null;
 //        }
@@ -419,7 +419,6 @@ public class OfflinePackageManager {
         if (willDownloadPackageInfoList == null) {
             return;
         }
-        Log.d("guojiabin","performDownloadFailure");
         PackageInfo packageInfo = null;
         PackageInfo temp = new PackageInfo();
         temp.setPackageId(packageId);
