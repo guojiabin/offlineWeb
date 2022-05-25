@@ -8,6 +8,7 @@ import android.os.Message;
 import android.text.TextUtils;
 import android.util.Log;
 
+import com.dianping.logan.Logan;
 import com.google.gson.Gson;
 import com.liulishuo.filedownloader.FileDownloader;
 import com.ph.lib.offline.web.cache.CacheManage;
@@ -133,6 +134,7 @@ public class OfflinePackageManager {
         if (packageStr == null) {
             packageStr = "";
         }
+        Logan.w("[OfflinePackageManager]--update--->"+packageStr,1);
         ensurePacakageThread();
         Message message = Message.obtain();
         message.what = WHAT_START_UPDATE;
@@ -156,6 +158,7 @@ public class OfflinePackageManager {
     private void performUpdate(String packageStr) {
         String packageIndexFileName = FileUtils.getPackageIndexFileName(context);
         File packageIndexFile = new File(packageIndexFileName);
+        Logan.w("[OfflinePackageManager]--performUpdate--->"+packageStr+";"+packageIndexFileName,1);
         /***
          * 是否是第一次加载离线包
          * */
@@ -299,12 +302,14 @@ public class OfflinePackageManager {
             return;
         }
         String updateStr = new Gson().toJson(localPackageEntity);
+        Logan.w("[OfflinePackageManager]--updateStr---"+updateStr,1);
         try {
             FileOutputStream outputStream = new FileOutputStream(packageIndexFile);
             try {
                 outputStream.write(updateStr.getBytes());
             } catch (IOException ignore) {
                 Logger.e("write packageIndex file error");
+                Logan.w("[OfflinePackageManager]---write packageIndex file error",1);
             } finally {
                 if (outputStream != null) {
                     try {
@@ -316,6 +321,7 @@ public class OfflinePackageManager {
             }
         } catch (Exception ignore) {
             Logger.e("read packageIndex file error");
+            Logan.w("[OfflinePackageManager]---read packageIndex file error",1);
         }
     }
 
@@ -333,6 +339,7 @@ public class OfflinePackageManager {
         WebResourceResponse resourceResponse = null;
 //        synchronized (resourceManager) {
             resourceResponse = resourceManager.getResource(url);
+        Logan.w("[OfflinePackageManager]--WebResourceResponse--->"+resourceResponse+"-----"+url,1);
 //        }
 //        if (!resourceLock.tryLock()) {
 //            return null;
@@ -350,6 +357,7 @@ public class OfflinePackageManager {
         message.what = WHAT_DOWNLOAD_SUCCESS;
         message.obj = packageId;
         packageHandler.sendMessage(message);
+        Logan.w("[OfflinePackageManager]--downloadSuccess--->",1);
     }
 
     private void downloadFailure(String packageId) {
@@ -360,6 +368,7 @@ public class OfflinePackageManager {
         message.what = WHAT_DOWNLOAD_FAILURE;
         message.obj = packageId;
         packageHandler.sendMessage(message);
+        Logan.w("[OfflinePackageManager]--downloadFailure--->",1);
     }
 
     private void performDownloadSuccess(String packageId) {
@@ -375,6 +384,7 @@ public class OfflinePackageManager {
         }
         allResouceUpdateFinished();
         installPackage(packageId, packageInfo, false);
+        Logan.w("[OfflinePackageManager]---installPackage---开始解压资源包",1);
     }
 
     private void installPackage(String packageId, PackageInfo packageInfo, boolean isAssets) {
@@ -387,7 +397,7 @@ public class OfflinePackageManager {
 //                resourceLock.lock();
 
                     boolean isSuccess = packageInstaller.install(packageInfo, isAssets);
-
+                    Logan.w("[OfflinePackageManager]--installPackage--->"+isSuccess,1);
                     /**
                      * 安装失败情况下，不做任何处理，因为资源既然资源需要最新资源，失败了，就没有必要再用缓存了
                      */
@@ -401,6 +411,7 @@ public class OfflinePackageManager {
 //                resourceLock.unlock();
                 }catch (Exception e){
                     Log.d("OfflinePackageManager",e.getMessage());
+                    Logan.w("[OfflinePackageManager]--installPackage--->解压失败",1);
 //                e.printStackTrace();
                 }
 
@@ -436,6 +447,7 @@ public class OfflinePackageManager {
             }
             allResouceUpdateFinished();
         }
+        Logan.w("[OfflinePackageManager]--performDownloadFailure--->下载失败",1);
 
     }
 

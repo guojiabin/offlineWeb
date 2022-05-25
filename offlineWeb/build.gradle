@@ -60,4 +60,5 @@ dependencies {
     implementation 'androidx.core:core:1.0.1'
     implementation 'com.tencent.tbs.tbssdk:sdk:43967'
     implementation 'com.jakewharton:disklrucache:2.0.2'
+    implementation 'com.dianping.android.sdk:logan:1.2.4'
 }

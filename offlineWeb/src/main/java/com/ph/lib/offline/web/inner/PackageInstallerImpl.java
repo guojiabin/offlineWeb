@@ -4,6 +4,7 @@ import android.content.Context;
 import android.text.TextUtils;
 import android.util.Log;
 
+import com.dianping.logan.Logan;
 import com.ph.lib.offline.web.core.PackageEntity;
 import com.ph.lib.offline.web.core.PackageInfo;
 import com.ph.lib.offline.web.core.PackageInstaller;
@@ -86,11 +87,13 @@ public class PackageInstallerImpl implements PackageInstaller {
         isSuccess = FileUtils.copyFileCover(willCopyFile, updateFile);
         if (!isSuccess) {
             Logger.e("[" + packageInfo.getPackageId() + "] : " + "copy file error ");
+            Logan.w("[OfflinePackageManager]--"+"[" + packageInfo.getPackageId() + "] : " + "copy file error ",1);
             return false;
         }
         isSuccess = FileUtils.delFile(willCopyFile);
         if (!isSuccess) {
             Logger.e("[" + packageInfo.getPackageId() + "] : " + "delete will copy file error ");
+            Logan.w("[OfflinePackageManager]--"+"[" + packageInfo.getPackageId() + "] : " + "delete will copy file error ",1);
             return false;
         }
         /**
@@ -98,6 +101,7 @@ public class PackageInstallerImpl implements PackageInstaller {
          * 解压成功
          */
         String workPath = FileUtils.getPackageWorkName(context, packageInfo.getPackageId(), packageInfo.getVersion());
+        Logan.w("[OfflinePackageManager]--解压目录"+workPath,1);
         try {
             isSuccess = FileUtils.unZipFolder(updateFile, workPath);
         } catch (Exception e) {
@@ -105,6 +109,7 @@ public class PackageInstallerImpl implements PackageInstaller {
         }
         if (!isSuccess) {
             Logger.e("[" + packageInfo.getPackageId() + "] : " + "unZipFolder error ");
+            Logan.w("[OfflinePackageManager]--解压失败--->"+"[" + packageInfo.getPackageId() + "]",1);
             return false;
         }
         if (isSuccess) {

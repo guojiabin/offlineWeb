@@ -6,6 +6,7 @@ import android.os.Build;
 import android.text.TextUtils;
 import android.util.Log;
 
+import com.dianping.logan.Logan;
 import com.ph.lib.offline.web.OfflinePackageManager;
 import com.ph.lib.offline.web.core.Contants;
 import com.ph.lib.offline.web.core.ResourceInfo;
@@ -108,24 +109,29 @@ public class ResourceManagerImpl implements ResourceManager {
             FileUtils.getPackageWorkName(context, packageId, version) + File.separator + Contants.RESOURCE_MIDDLE_PATH
                 + File.separator+Contants.PACKAGE+File.separator + Contants.RESOURCE_INDEX_NAME;
         Logger.d("updateResource indexFileName: " + indexFileName);
+        Logan.w("[OfflinePackageManager]--updateResource indexFileName--->"+indexFileName,1);
         File indexFile = new File(indexFileName);
         if (!indexFile.exists()) {
             Logger.e("updateResource indexFile is not exists ,update Resource error ");
+            Logan.w("[OfflinePackageManager]--updateResource indexFile is not exists ,update Resource error",1);
             return isSuccess;
         }
         if (!indexFile.isFile()) {
             Logger.e("updateResource indexFile is not file ,update Resource error ");
+            Logan.w("[OfflinePackageManager]--updateResource indexFile is not file ,update Resource error ",1);
             return isSuccess;
         }
         FileInputStream indexFis = null;
         try {
             indexFis = new FileInputStream(indexFile);
         } catch (FileNotFoundException e) {
+            Logan.w("[OfflinePackageManager]--indexFis FileNotFoundException"+e.getMessage(),1);
             Log.d("guojiabin-FileNotFound-",e.getMessage());
 
         }
         if (indexFis == null) {
             Logger.e("updateResource indexStream is error,  update Resource error ");
+            Logan.w("[OfflinePackageManager]--updateResource indexStream is error,update Resource error",1);
             return isSuccess;
         }
 
@@ -163,6 +169,7 @@ public class ResourceManagerImpl implements ResourceManager {
             if(resourceInfoMap.get(key) == null){
                 resourceInfoMap.put(key,resourceInfo);
             }
+            Logan.w("[OfflinePackageManager]--remoteUrl---"+remoteUrl,1);
             lock.unlock();
         }
         return isSuccess;
